@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patrícia Costa — Web Developer & Digital Forensics</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Patrícia Costa — Web Developer e entusiasta de Digital Forensics em Porto, Portugal. Mestranda em Ciências Forenses, especializada em análise de evidência digital, OSINT e desenvolvimento web." />
+  <meta name="author" content="Patrícia Costa" />
+  <link rel="canonical" href="https://pcforensicsciences.github.io/pcforensicscience.github.io/" />
+
+  <!-- Open Graph / Facebook / LinkedIn -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://pcforensicsciences.github.io/pcforensicscience.github.io/" />
+  <meta property="og:title" content="Patrícia Costa — Web Developer & Digital Forensics" />
+  <meta property="og:description" content="Web Developer e entusiasta de Digital Forensics em Porto. Mestranda em Ciências Forenses, especializada em OSINT e análise de evidência digital." />
+  <meta property="og:image" content="https://pcforensicsciences.github.io/pcforensicscience.github.io/og-image.png" />
+  <meta property="og:locale" content="pt_PT" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Patrícia Costa — Web Developer & Digital Forensics" />
+  <meta name="twitter:description" content="Web Developer e entusiasta de Digital Forensics em Porto. Mestranda em Ciências Forenses, especializada em OSINT e análise de evidência digital." />
+  <meta name="twitter:image" content="https://pcforensicsciences.github.io/pcforensicscience.github.io/og-image.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230D1117'/%3E%3Ctext x='50' y='68' font-size='55' font-family='monospace' fill='%2300C2FF' text-anchor='middle'%3E%2F%3C/text%3E%3C/svg%3E" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0D1117;
+      --bg2:      #161B22;
+      --bg3:      #21262D;
+      --accent:   #00C2FF;
+      --accent2:  #7C3AED;
+      --text:     #E6EDF3;
+      --muted:    #8B949E;
+      --border:   #30363D;
+      --green:    #3FB950;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem;
+      height: 60px;
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .nav-logo span { color: var(--muted); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.875rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 100px 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.3;
+      mask-image: radial-gradient(ellipse at 60% 50%, black 20%, transparent 70%);
+    }
+    .hero-glow {
+      position: absolute; top: 20%; right: 5%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(0,194,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content { max-width: 760px; position: relative; }
+
+    .terminal-prompt {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--green);
+      margin-bottom: 1.5rem;
+      display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .terminal-line { display: flex; align-items: center; gap: 0.5rem; }
+    .terminal-line .prompt { color: var(--accent); }
+    .terminal-line .cmd { color: var(--text); }
+    .terminal-line .output { color: var(--muted); padding-left: 1rem; }
+    .cursor {
+      display: inline-block; width: 9px; height: 1.1em;
+      background: var(--accent); vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.2rem;
+    }
+    h1 .accent { color: var(--accent); }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+    .hero-tags {
+      display: flex; flex-wrap: wrap; gap: 0.6rem;
+      margin-bottom: 2.5rem;
+    }
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      padding: 0.3rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      background: var(--bg2);
+    }
+    .tag.active { border-color: var(--accent); color: var(--accent); background: rgba(0,194,255,0.06); }
+
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: 6px;
+      font-size: 0.9rem; font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer; border: none;
+    }
+    .btn-primary {
+      background: var(--accent); color: var(--bg);
+    }
+    .btn-primary:hover { background: #33cbff; transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+    /* ── SECTIONS ── */
+    section { padding: 5rem 2rem; max-width: 900px; margin: 0 auto; }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+    .section-divider {
+      width: 40px; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── ABOUT ── */
+    #about { border-top: 1px solid var(--border); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    .about-text p {
+      color: var(--muted);
+      margin-bottom: 1rem;
+      line-height: 1.8;
+    }
+    .about-text p strong { color: var(--text); }
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    }
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+    }
+    .stat-card .number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem; font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .stat-card .label { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── SKILLS ── */
+    #skills { border-top: 1px solid var(--border); }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.2rem;
+    }
+    .skill-group {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.4rem;
+      transition: border-color 0.2s;
+    }
+    .skill-group:hover { border-color: var(--accent); }
+    .skill-group-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .skill-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .pill {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.65rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+    }
+
+    /* ── PROJECTS ── */
+    #projects { border-top: 1px solid var(--border); }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
+    .project-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      display: flex; flex-direction: column;
+      transition: border-color 0.2s, transform 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .project-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .project-thumb {
+      height: 110px;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.4rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .project-thumb::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 16px 16px;
+      opacity: 0.35;
+    }
+    .project-thumb span { position: relative; z-index: 1; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+    .project-thumb.thumb-1 { background: linear-gradient(135deg, rgba(0,194,255,0.16), var(--bg3)); }
+    .project-thumb.thumb-2 { background: linear-gradient(135deg, rgba(124,58,237,0.18), var(--bg3)); }
+    .project-thumb.thumb-3 { background: linear-gradient(135deg, rgba(255,193,7,0.16), var(--bg3)); }
+    .project-thumb.thumb-4 { background: linear-gradient(135deg, rgba(63,185,80,0.18), var(--bg3)); }
+    .project-header {
+      display: flex; align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .project-icon { font-size: 1.4rem; }
+    .project-type {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      background: rgba(0,194,255,0.08);
+      border: 1px solid rgba(0,194,255,0.2);
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+    }
+    .project-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem; font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .project-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; flex: 1; }
+    .project-footer {
+      margin-top: 1.2rem;
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .project-footer .pill { font-size: 0.72rem; }
+
+    /* ── EXPERIENCE ── */
+    #experience { border-top: 1px solid var(--border); }
+    .timeline { position: relative; padding-left: 1.5rem; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 0; top: 6px; bottom: 0;
+      width: 1px; background: var(--border);
+    }
+    .timeline-item { position: relative; margin-bottom: 2.5rem; }
+    .timeline-item::before {
+      content: '';
+      position: absolute; left: -1.56rem; top: 6px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+    .timeline-dates {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+    .timeline-role {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem; font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+    .timeline-org {
+      font-size: 0.875rem; color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .timeline-bullets { list-style: none; }
+    .timeline-bullets li {
+      font-size: 0.875rem; color: var(--muted);
+      padding-left: 1rem; position: relative;
+      margin-bottom: 0.35rem; line-height: 1.6;
+    }
+    .timeline-bullets li::before {
+      content: '▸'; position: absolute; left: 0;
+      color: var(--accent); font-size: 0.7rem;
+    }
+
+    /* ── EDUCATION ── */
+    #education { border-top: 1px solid var(--border); }
+    .edu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem;
+    }
+    .edu-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.4rem;
+    }
+    .edu-card .year {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .edu-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.975rem; font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+    .edu-card p { font-size: 0.825rem; color: var(--muted); }
+    .edu-badge {
+      display: inline-block;
+      margin-top: 0.6rem;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .badge-ongoing { background: rgba(0,194,255,0.1); color: var(--accent); border: 1px solid rgba(0,194,255,0.25); }
+    .badge-done { background: rgba(63,185,80,0.1); color: var(--green); border: 1px solid rgba(63,185,80,0.25); }
+
+    /* ── CONTACT ── */
+    #contact { border-top: 1px solid var(--border); }
+    .contact-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-box::before {
+      content: '';
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 300px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .contact-box h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.6rem; font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .contact-box p { color: var(--muted); margin-bottom: 2rem; max-width: 440px; margin-left: auto; margin-right: auto; }
+    .contact-links {
+      display: flex; justify-content: center;
+      gap: 1rem; flex-wrap: wrap;
+    }
+    .contact-divider {
+      display: flex; align-items: center; gap: 1rem;
+      color: var(--muted); font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      margin: 2rem 0;
+      max-width: 440px; margin-left: auto; margin-right: auto;
+    }
+    .contact-divider::before, .contact-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .contact-form {
+      max-width: 440px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 1rem;
+      text-align: left;
+    }
+    .form-field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-field label {
+      font-size: 0.8rem; color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .form-field input, .form-field textarea {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.65rem 0.8rem;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      resize: vertical;
+    }
+    .form-field input:focus, .form-field textarea:focus {
+      outline: none; border-color: var(--accent);
+    }
+    .form-status {
+      font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 1.2em;
+    }
+    .form-status.success { color: var(--green); }
+    .form-status.error { color: #F85149; }
+    /* Honeypot — hidden from real users, catches simple bots */
+    .form-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-in {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 680px) {
+      nav { padding: 0 1rem; }
+      .nav-links { gap: 1rem; }
+      .nav-links a { font-size: 0.8rem; }
+      section { padding: 3.5rem 1rem; }
+      .about-grid { grid-template-columns: 1fr; }
+      .contact-box { padding: 2rem 1.2rem; }
+      h1 { font-size: 2rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-in { opacity: 1; transform: none; transition: none; }
+      .cursor { animation: none; }
+    }
+  </style>
+  <noscript>
+    <style>
+      #main-heading, #hero-sub, #hero-tags, #hero-cta { opacity: 1 !important; }
+      .fade-in { opacity: 1 !important; transform: none !important; }
+      .terminal-prompt { display: none; }
+    </style>
+  </noscript>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#hero"><span>/</span>pcforensicscience</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="terminal-prompt" id="terminal">
+        <div class="terminal-line">
+          <span class="prompt">$</span>
+          <span class="cmd" id="cmd1"></span>
+        </div>
+        <div class="terminal-line" id="output1" style="display:none">
+          <span class="output" id="out1"></span>
+        </div>
+        <div class="terminal-line" id="line2" style="display:none">
+          <span class="prompt">$</span>
+          <span class="cmd" id="cmd2"></span>
+        </div>
+        <div class="terminal-line" id="output2" style="display:none">
+          <span class="output" id="out2"></span>
+        </div>
+        <div class="terminal-line" id="line3" style="display:none">
+          <span class="prompt">$</span>
+          <span class="cmd" id="cmd3"></span><span class="cursor" id="cur"></span>
+        </div>
+      </div>
+
+      <h1 id="main-heading" style="opacity:0;transition:opacity 0.8s">
+        Web Developer<br /><span class="accent">& Digital Forensics</span>
+      </h1>
+      <p class="hero-sub" id="hero-sub" style="opacity:0;transition:opacity 0.8s 0.2s">
+        Based in Rio Tinto, Porto. Bridging <strong>web development</strong> and <strong>cybersecurity</strong> — with a forensic lens shaped by 12+ years in hospital and academic research environments.
+      </p>
+      <div class="hero-tags" id="hero-tags" style="opacity:0;transition:opacity 0.8s 0.4s">
+        <span class="tag active">Digital Forensics</span>
+        <span class="tag active">Cybersecurity</span>
+        <span class="tag">Web Development</span>
+        <span class="tag">OSINT</span>
+        <span class="tag">Python</span>
+        <span class="tag">Autopsy</span>
+        <span class="tag">Maltego</span>
+      </div>
+      <div class="hero-cta" id="hero-cta" style="opacity:0;transition:opacity 0.8s 0.6s">
+        <a href="#projects" class="btn btn-primary">View Projects</a>
+        <a href="#contact" class="btn btn-outline">Get in Touch</a>
+        <a href="https://github.com/pcforensicscience" target="_blank" class="btn btn-outline">GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="fade-in">
+      <p class="section-label">// about</p>
+      <h2>Who I Am</h2>
+      <div class="section-divider"></div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>I'm a <strong>Web Developer and Digital Forensics enthusiast</strong> currently pursuing a Master's degree in Forensic Sciences at the University of Porto, where I'm developing deep expertise in digital evidence analysis and investigation methodologies.</p>
+          <p>My background is unusual: over a decade working in hospital research and training units gave me rigorous habits around data integrity, documentation, and process — skills that translate directly into cybersecurity and forensic work.</p>
+          <p>I'm self-taught in web development (HTML, CSS, JavaScript, PHP, Python) and actively building my cybersecurity toolkit — working with <strong>Autopsy</strong> and <strong>Maltego</strong> in a dedicated lab environment running Kali Linux and Ubuntu VMs.</p>
+        </div>
+        <div class="about-stats">
+          <div class="stat-card">
+            <div class="number">12+</div>
+            <div class="label">Years in research & academic environments</div>
+          </div>
+          <div class="stat-card">
+            <div class="number">4</div>
+            <div class="label">Web projects on GitHub</div>
+          </div>
+          <div class="stat-card">
+            <div class="number">2</div>
+            <div class="label">VMs — Kali Linux & Ubuntu</div>
+          </div>
+          <div class="stat-card">
+            <div class="number">MSc</div>
+            <div class="label">Forensic Sciences, U. Porto (ongoing)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="fade-in">
+      <p class="section-label">// skills</p>
+      <h2>Technical Stack</h2>
+      <div class="section-divider"></div>
+      <div class="skills-grid">
+        <div class="skill-group">
+          <div class="skill-group-title">Languages</div>
+          <div class="skill-pills">
+            <span class="pill">HTML5</span>
+            <span class="pill">CSS3</span>
+            <span class="pill">JavaScript</span>
+            <span class="pill">PHP</span>
+            <span class="pill">Python</span>
+            <span class="pill">SQL</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Cybersecurity & Forensics</div>
+          <div class="skill-pills">
+            <span class="pill">Autopsy</span>
+            <span class="pill">Maltego</span>
+            <span class="pill">Kali Linux</span>
+            <span class="pill">OSINT</span>
+            <span class="pill">Digital Forensics</span>
+            <span class="pill">InfoSec</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Tools & Platforms</div>
+          <div class="skill-pills">
+            <span class="pill">WordPress</span>
+            <span class="pill">Figma</span>
+            <span class="pill">Git / GitHub</span>
+            <span class="pill">Power BI</span>
+            <span class="pill">Canva</span>
+            <span class="pill">SPSS</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Environment</div>
+          <div class="skill-pills">
+            <span class="pill">Ubuntu VM</span>
+            <span class="pill">Kali Linux VM</span>
+            <span class="pill">VS Code</span>
+            <span class="pill">Moodle</span>
+            <span class="pill">MS Project</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="fade-in">
+      <p class="section-label">// projects</p>
+      <h2>Selected Work</h2>
+      <div class="section-divider"></div>
+      <div class="projects-grid">
+
+        <a class="project-card" href="https://github.com/pcforensicscience/AI" target="_blank">
+          <div class="project-thumb thumb-1"><span>🤖</span></div>
+          <div class="project-header">
+            <span class="project-icon">🤖</span>
+            <span class="project-type">Web · SheCodes</span>
+          </div>
+          <h3>Artificial Intelligence Page</h3>
+          <p>Informative web page about AI built as the final project of the SheCodes workshop. Responsive layout with interactive user prompts and personalised responses.</p>
+          <div class="project-footer">
+            <span class="pill">HTML5</span>
+            <span class="pill">CSS3</span>
+            <span class="pill">JavaScript</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="https://github.com/pcforensicscience/digitalinspire" target="_blank">
+          <div class="project-thumb thumb-2"><span>💡</span></div>
+          <div class="project-header">
+            <span class="project-icon">💡</span>
+            <span class="project-type">Web · Client</span>
+          </div>
+          <h3>Digital Inspire</h3>
+          <p>Full website for a digital communications company. Modular structure with multiple pages, clean navigation and responsive design across all screen sizes.</p>
+          <div class="project-footer">
+            <span class="pill">HTML</span>
+            <span class="pill">CSS</span>
+            <span class="pill">Responsive</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="https://github.com/pcforensicscience/Yellow." target="_blank">
+          <div class="project-thumb thumb-3"><span>🟡</span></div>
+          <div class="project-header">
+            <span class="project-icon">🟡</span>
+            <span class="project-type">Web · Agency</span>
+          </div>
+          <h3>Yellow. — Agency Site</h3>
+          <p>Professional website for a communications agency. Focused on user experience, visual identity, and portfolio presentation with clean HTML/CSS architecture.</p>
+          <div class="project-footer">
+            <span class="pill">HTML</span>
+            <span class="pill">CSS</span>
+            <span class="pill">UX Design</span>
+          </div>
+        </a>
+
+        <a class="project-card" href="https://github.com/pcforensicscience/boilerplate-infosec" target="_blank">
+          <div class="project-thumb thumb-4"><span>🔐</span></div>
+          <div class="project-header">
+            <span class="project-icon">🔐</span>
+            <span class="project-type">Security · freeCodeCamp</span>
+          </div>
+          <h3>InfoSec Boilerplate</h3>
+          <p>Hands-on exploration of information security concepts. Covers basic authentication flows, input validation and InfoSec best practices using JavaScript.</p>
+          <div class="project-footer">
+            <span class="pill">JavaScript</span>
+            <span class="pill">InfoSec</span>
+            <span class="pill">Auth</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="fade-in">
+      <p class="section-label">// experience</p>
+      <h2>Professional Experience</h2>
+      <div class="section-divider"></div>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-dates">Sep 2024 — Present</div>
+          <div class="timeline-role">Senior Technician</div>
+          <div class="timeline-org">Faculty of Medicine, University of Porto — Forensic Medicine & Sciences Unit</div>
+          <ul class="timeline-bullets">
+            <li>Management and organisation of technical-scientific information in forensic medicine contexts</li>
+            <li>Administrative and documentary support including digital archiving and database management</li>
+            <li>Collaboration on forensic research projects, applying analytical and documentation skills</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dates">Jun 2011 — Jun 2023</div>
+          <div class="timeline-role">Administrative Assistant — Research & Training Unit</div>
+          <div class="timeline-org">Centro Materno Infantil do Norte · Centro Hospitalar Universitário do Porto</div>
+          <ul class="timeline-bullets">
+            <li>Organisation of information in scientific databases and digital file systems</li>
+            <li>Managing national and international placement requests for medical internships</li>
+            <li>Secretarial support for Integrated Master's Degree in Medicine disciplines (ICBAS)</li>
+            <li>Organisation and secretariat of congresses, training activities and scientific events</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dates">May 2019 — Dec 2019</div>
+          <div class="timeline-role">Communication & Marketing</div>
+          <div class="timeline-org">Association for Maternal and Child Development and Education</div>
+          <ul class="timeline-bullets">
+            <li>Organisation of conferences, congresses and hands-on workshops</li>
+            <li>Development and monitoring of content platforms (website, newsletter, social media)</li>
+            <li>Liaison with suppliers and partners; campaign results analysis</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education">
+    <div class="fade-in">
+      <p class="section-label">// education</p>
+      <h2>Academic Background</h2>
+      <div class="section-divider"></div>
+      <div class="edu-grid">
+        <div class="edu-card">
+          <div class="year">2025 — 2027</div>
+          <h3>Master's in Forensic Sciences</h3>
+          <p>University of Porto</p>
+          <span class="edu-badge badge-ongoing">ongoing</span>
+        </div>
+        <div class="edu-card">
+          <div class="year">2022</div>
+          <h3>Bachelor's in Computer Engineering</h3>
+          <p>Universidade Aberta</p>
+          <span class="edu-badge badge-ongoing">ongoing</span>
+        </div>
+        <div class="edu-card">
+          <div class="year">2007 — 2010</div>
+          <h3>Bachelor's in Social Work</h3>
+          <p>ISCET — Instituto Superior das Ciências Empresariais e do Turismo</p>
+          <span class="edu-badge badge-done">completed</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+ <section id="contact">
+    <div class="fade-in">
+      <p class="section-label">// contact</p>
+      <h2>Get In Touch</h2>
+      <div class="section-divider"></div>
+      <div class="contact-box">
+        <h3>Let's work together</h3>
+        <p>Open to part-time opportunities in cybersecurity and digital forensics, as well as freelance web development projects.</p>
+        <div class="contact-links">
+          <!-- O TRUQUE ESTÁ AQUI: mailto: sem espaços antes do seu email -->
+          <a href="mailto:patriciacosta.ei@gmail.com" class="btn btn-primary">✉ Send Email</a>
+          <a href="https://linkedin.com/in/patricia-rodrigues-costa" target="_blank" class="btn btn-outline">LinkedIn ↗</a>
+          <a href="https://github.com/pcforensicscience" target="_blank" class="btn btn-outline">GitHub ↗</a>
+        </div>
+
+        <div class="contact-divider">or send a message directly</div>
+
+        <!--
+          FORM via Formspree (free tier, no backend needed):
+          1. Go to https://formspree.io and sign up with patriciacosta.ei@gmail.com
+          2. Create a new form, copy the endpoint it gives you
+             (looks like https://formspree.io/f/xxxxxxxx)
+          3. Replace YOUR_FORM_ID below with that ID
+        -->
+        <form class="contact-form" id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <div class="form-field">
+            <label for="cf-name">Name</label>
+            <input type="text" id="cf-name" name="name" required autocomplete="name" />
+          </div>
+          <div class="form-field">
+            <label for="cf-email">Email</label>
+            <input type="email" id="cf-email" name="email" required autocomplete="email" />
+          </div>
+          <div class="form-field">
+            <label for="cf-message">Message</label>
+            <textarea id="cf-message" name="message" rows="4" required></textarea>
+          </div>
+          <!-- Honeypot field: real users never fill this in, bots often do -->
+          <div class="form-honeypot" aria-hidden="true">
+            <label for="cf-website">Website</label>
+            <input type="text" id="cf-website" name="_gotcha" tabindex="-1" autocomplete="off" />
+          </div>
+          <button type="submit" class="btn btn-primary" id="cf-submit">Send Message</button>
+          <p class="form-status" id="cf-status" role="status"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 Patrícia Costa · Porto · Built with HTML, CSS & JavaScript</p>
+  </footer>
+
+  <script>
+    // ── Terminal intro animation ──
+    // Data-driven sequence: edit this array to change what the terminal "types" —
+    // no need to touch the animation logic itself.
+    const TERMINAL_SEQUENCE = [
+      { cmdEl: 'cmd1', text: 'whoami',        speed: 70,  pause: 200 },
+      { outEl: 'out1', outLine: 'output1', text: 'patriciacosta — Web Developer & Digital Forensics', speed: 18, pause: 400 },
+      { cmdEl: 'cmd2', line: 'line2',      text: 'cat skills.txt', speed: 70, pause: 200 },
+      { outEl: 'out2', outLine: 'output2', text: 'HTML · CSS · JS · Python · Autopsy · Maltego · OSINT', speed: 18, pause: 400 },
+      { cmdEl: 'cmd3', line: 'line3',      text: 'open --portfolio', speed: 70, pause: 0 },
+    ];
+
+    function typeText(el, text, speed) {
+      return new Promise((resolve) => {
+        let i = 0;
+        const t = setInterval(() => {
+          el.textContent += text[i++];
+          if (i >= text.length) { clearInterval(t); resolve(); }
+        }, speed);
+      });
+    }
+
+    function revealHero() {
+      ['main-heading', 'hero-sub', 'hero-tags', 'hero-cta'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.style.opacity = '1';
+      });
+    }
+
+    async function runTerminalIntro() {
+      for (const step of TERMINAL_SEQUENCE) {
+        if (step.line) document.getElementById(step.line).style.display = 'flex';
+        if (step.outLine) document.getElementById(step.outLine).style.display = 'flex';
+        const targetId = step.cmdEl || step.outEl;
+        await typeText(document.getElementById(targetId), step.text, step.speed);
+        if (step.pause) await new Promise((r) => setTimeout(r, step.pause));
+      }
+      revealHero();
+    }
+
+    window.addEventListener('load', () => {
+      try {
+        runTerminalIntro();
+      } catch (err) {
+        // If anything goes wrong with the animation, never leave the hero content hidden.
+        console.error('Terminal intro animation failed:', err);
+        revealHero();
+      }
+    });
+
+    // Safety net: whatever happens, guarantee hero content is visible after 4s.
+    setTimeout(revealHero, 4000);
+
+    // ── Contact form (Formspree, no backend required) ──
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+      contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const statusEl = document.getElementById('cf-status');
+        const submitBtn = document.getElementById('cf-submit');
+        const formAction = contactForm.getAttribute('action');
+
+        if (!formAction || formAction.includes('YOUR_FORM_ID')) {
+          statusEl.textContent = 'Contact form not configured yet — please use the email link above.';
+          statusEl.className = 'form-status error';
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+        statusEl.textContent = '';
+        statusEl.className = 'form-status';
+
+        try {
+          const response = await fetch(formAction, {
+            method: 'POST',
+            body: new FormData(contactForm),
+            headers: { Accept: 'application/json' },
+          });
+
+          if (response.ok) {
+            statusEl.textContent = 'Thanks! Your message has been sent — I\'ll reply soon.';
+            statusEl.className = 'form-status success';
+            contactForm.reset();
+          } else {
+            statusEl.textContent = 'Something went wrong. Please try the email link above instead.';
+            statusEl.className = 'form-status error';
+          }
+        } catch (err) {
+          console.error('Contact form submission failed:', err);
+          statusEl.textContent = 'Network error — please try the email link above instead.';
+          statusEl.className = 'form-status error';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send Message';
+        }
+      });
+    }
+
+    // ── Scroll fade-in ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+  </script>
+
+</body>
+</html>
